@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Подача заявки | КНУ Exchange</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="db.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0f1f;
+            color: #fff;
+        }
+        .header {
+            background: rgba(10,15,31,0.8);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+      .logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+        .nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+        }
+        .nav a:hover {
+            background: #667eea;
+            color: white;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .form-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 30px;
+            padding: 2rem;
+        }
+        h2 {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 2rem;
+            padding-left: 1rem;
+            border-left: 3px solid #667eea;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 0.5rem;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: white;
+            font-size: 1rem;
+        }
+        .program-cards {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .program-card {
+            flex: 1;
+            min-width: 150px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+        }
+        .program-card.selected {
+            border-color: #667eea;
+            background: rgba(102,126,234,0.1);
+        }
+        .program-card i {
+            font-size: 2rem;
+            color: #667eea;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1.5rem;
+        }
+        .footer {
+            background: rgba(0,0,0,0.5);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">🌍 КНУ Exchange</div>
+    <nav class="nav">
+        <a href="index.html">Главная</a>
+        <a href="programs.html">Программы</a>
+        <a href="language-test.html">Тест языка</a>
+        <a href="apply.html">Подать заявку</a>
+        <a href="dashboard.html">Кабинет</a>
+        <a href="login.html">Вход</a>
+    </nav>
+</header>
+
+<div class="form-container">
+    <div class="form-card">
+        <h2>📝 Подача заявки</h2>
+        <div class="subtitle">Заполните информацию для участия в программе</div>
+
+        <form id="applicationForm">
+            <div class="form-group">
+                <label>Выберите программу</label>
+                <div class="program-cards" id="programCards"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Средний балл (GPA)</label>
+                <input type="number" step="0.01" id="gpaInput" placeholder="3.5" required>
+            </div>
+
+            <div class="form-group">
+                <label>Уровень языка</label>
+                <select id="languageSelect" required>
+                    <option value="">Выберите уровень</option>
+                    <option value="A2">A2 (базовый)</option>
+                    <option value="B1">B1 (средний)</option>
+                    <option value="B2">B2 (выше среднего)</option>
+                    <option value="C1">C1 (продвинутый)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">📤 Отправить заявку</button>
+        </form>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>© 2026 КНУ Exchange | <a href="mailto:info@knu.kg">info@knu.kg</a></p>
+</footer>
+
+<script>
+    // Загрузка программ
+    const programs = [
+        { id: 1, name: "Erasmus+", country: "Германия", icon: "🇩🇪" },
+        { id: 2, name: "Academic Mobility", country: "Турция", icon: "🇹🇷" },
+        { id: 3, name: "Летняя стажировка", country: "Корея", icon: "🇰🇷" },
+        { id: 4, name: "Study in Japan", country: "Япония", icon: "🇯🇵" }
+    ];
+    
+    const container = document.getElementById('programCards');
+    
+    programs.forEach(prog => {
+        const card = document.createElement('div');
+        card.className = 'program-card';
+        card.innerHTML = `<div>${prog.icon}</div><span>${prog.name}</span><small>${prog.country}</small>`;
+        card.onclick = () => {
+            document.querySelectorAll('.program-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            card.selectedProgram = prog.name;
+        };
+        container.appendChild(card);
+    });
+    
+    // Отправка
+    document.getElementById('applicationForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const selectedCard = document.querySelector('.program-card.selected');
+        if (!selectedCard) {
+            alert('Выберите программу');
+            return;
+        }
+        
+        const user = db.getCurrentUser();
+        if (!user) {
+            if (confirm('Нужно войти. Перейти на страницу входа?')) {
+                window.location.href = 'login.html';
+            }
+            return;
+        }
+        
+        const gpa = document.getElementById('gpaInput').value;
+        const languageLevel = document.getElementById('languageSelect').value;
+        
+        if (!gpa || !languageLevel) {
+            alert('Заполните все поля');
+            return;
+        }
+        
+        try {
+            await db.saveApplication({
+                program: selectedCard.selectedProgram || selectedCard.querySelector('span').innerText,
+                gpa: parseFloat(gpa),
+                languageLevel: languageLevel
+            });
+            alert('Заявка отправлена!');
+            window.location.href = 'dashboard.html';
+        } catch (error) {
+            alert('Ошибка: ' + error.message);
+        }
+    });
+</script>
+</body>
+</html>

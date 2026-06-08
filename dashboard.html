@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет | КНУ Exchange</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="db.js"></script>
+    <style>
+        .logout-btn {
+            background: rgba(220,53,69,0.2);
+            border: 1px solid #dc3545;
+            color: #ff6b6b;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .logout-btn:hover { background: #dc3545; color: white; }
+        .export-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">🌍 КНУ Exchange</div>
+    <nav class="nav">
+        <a href="index.html"><i class="fas fa-home"></i> Главная</a>
+        <a href="programs.html"><i class="fas fa-book"></i> Программы</a>
+        <a href="language-test.html"><i class="fas fa-language"></i> Тест языка</a>
+        <a href="apply.html"><i class="fas fa-paper-plane"></i> Подать заявку</a>
+        <a href="dashboard.html"><i class="fas fa-user"></i> Кабинет</a>
+    </nav>
+</header>
+
+<div class="dashboard-container" style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+    
+    <div class="welcome-card">
+        <div class="welcome-avatar"><i class="fas fa-user-graduate"></i></div>
+        <div class="welcome-text">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <h1 id="userName">Загрузка...</h1>
+                <div>
+                    <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+                </div>
+            </div>
+            <p id="userEmail">Загрузка...</p>
+            <div class="student-badge" id="userInfo">Загрузка...</div>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 30px; text-align: right;">
+        <button class="export-btn" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Экспорт в Excel</button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon"><i class="fas fa-file-alt"></i></div><div class="stat-info"><h3 id="totalApps">0</h3><p>Всего заявок</p></div></div>
+        <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-info"><h3 id="pendingApps">0</h3><p>В обработке</p></div></div>
+        <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-info"><h3 id="approvedApps">0</h3><p>Одобрено</p></div></div>
+        <div class="stat-card"><div class="stat-icon"><i class="fas fa-language"></i></div><div class="stat-info"><h3 id="languageLevel">-</h3><p>Уровень языка</p></div></div>
+    </div>
+
+    <h2 class="section-title"><i class="fas fa-file-signature"></i> Мои заявки</h2>
+    <div id="applicationsList" class="applications-grid"></div>
+
+    <h2 class="section-title"><i class="fas fa-bell"></i> Уведомления</h2>
+    <div id="notificationsList" class="notifications-section"></div>
+</div>
+
+<footer class="footer">
+    <p>© 2026 КНУ Exchange. Все права защищены.</p>
+</footer>
+
+<script>
+    async function loadDashboard() {
+        const user = db.getCurrentUser();
+        if (!user) {
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        document.getElementById('userName').textContent = user.fullName + ', здравствуйте! 👋';
+        document.getElementById('userEmail').textContent = user.email;
+        document.getElementById('userInfo').innerHTML = `<i class="fas fa-id-card"></i> ${user.studentId} | <i class="fas fa-graduation-cap"></i> ${user.faculty} | <i class="fas fa-chart-line"></i> ${user.course} курс`;
+        
+        const testResult = await db.getLatestTestResult();
+        if (testResult) document.getElementById('languageLevel').textContent = testResult.level;
+        
+        const apps = await db.getUserApplications();
+        document.getElementById('totalApps').textContent = apps.length;
+        document.getElementById('pendingApps').textContent = apps.filter(a => a.status === 'pending').length;
+        document.getElementById('approvedApps').textContent = apps.filter(a => a.status === 'approved').length;
+        
+        const container = document.getElementById('applicationsList');
+        if (apps.length === 0) {
+            container.innerHTML = '<p style="text-align: center;">📭 У вас пока нет заявок. <a href="apply.html">Подать заявку</a></p>';
+        } else {
+            container.innerHTML = apps.map(app => `
+                <div class="application-card">
+                    <div class="application-status status-${app.status}">
+                        ${app.status === 'pending' ? '🟡 На рассмотрении' : (app.status === 'approved' ? '✅ Одобрена' : '❌ Отклонена')}
+                    </div>
+                    <h3>🌍 ${app.program}</h3>
+                    <div class="application-details">
+                        <div class="application-detail"><i class="fas fa-calendar-alt"></i> Подано: ${new Date(app.createdAt).toLocaleDateString()}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        const notifs = await db.getUserNotifications();
+        const notifContainer = document.getElementById('notificationsList');
+        if (notifs.length === 0) {
+            notifContainer.innerHTML = '<p style="color: rgba(255,255,255,0.5); text-align: center;">🔔 Нет новых уведомлений</p>';
+        } else {
+            notifContainer.innerHTML = notifs.map(n => `
+                <div class="notification-card">
+                    <div class="notification-icon"><i class="fas fa-info-circle"></i></div>
+                    <div class="notification-content">
+                        <p>${n.title}</p>
+                        <p style="font-size: 0.9rem;">${n.message}</p>
+                        <span class="notification-time">${new Date(n.createdAt).toLocaleString()}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+    
+    function logout() {
+        db.logoutUser();
+        window.location.href = 'login.html';
+    }
+    
+    async function exportToExcel() {
+        const user = db.getCurrentUser();
+        const apps = await db.getUserApplications();
+        if (!apps.length) {
+            alert('Нет заявок для экспорта');
+            return;
+        }
+        let csv = "ID,Программа,Статус,Дата подачи\n";
+        apps.forEach(app => {
+            csv += `"${app.id}","${app.program}","${app.status}","${new Date(app.createdAt).toLocaleString()}"\n`;
+        });
+        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute("download", `мои_заявки_${user.fullName}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        alert('✅ Экспорт выполнен');
+    }
+    
+    loadDashboard();
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход | КНУ Exchange</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="db.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0f1f 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 50px;
+            width: 450px;
+            max-width: 90%;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        h1 { font-size: 2rem; margin-bottom: 10px; color: #667eea; text-align: center; }
+        .subtitle { color: rgba(255,255,255,0.6); margin-bottom: 30px; text-align: center; }
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 30px;
+            color: white;
+            font-size: 1rem;
+        }
+        input:focus { outline: none; border-color: #667eea; }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
+        .register-link { text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); }
+        .register-link a { color: #667eea; text-decoration: none; }
+        .error { color: #ff6b6b; font-size: 0.9rem; margin-top: 10px; text-align: center; }
+        .success { color: #28a745; font-size: 0.9rem; margin-top: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1><i class="fas fa-graduation-cap"></i> КНУ Exchange</h1>
+        <p class="subtitle">Войдите в личный кабинет</p>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Пароль">
+        <div id="message" class="error"></div>
+        <button onclick="handleLogin()"><i class="fas fa-sign-in-alt"></i> Войти</button>
+        <div class="register-link">Нет аккаунта? <a href="register.html">Зарегистрироваться</a></div>
+    </div>
+    <script>
+        async function handleLogin() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            if (!email || !password) {
+                messageDiv.textContent = '❌ Заполните все поля';
+                messageDiv.className = 'error';
+                return;
+            }
+            try {
+                const user = await db.loginUser(email, password);
+                messageDiv.textContent = '✅ Вход выполнен! Перенаправление...';
+                messageDiv.className = 'success';
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+            } catch (error) {
+                messageDiv.textContent = '❌ ' + error.message;
+                messageDiv.className = 'error';
+            }
+        }
+        document.addEventListener('keypress', e => { if (e.key === 'Enter') handleLogin(); });
+    </script>
+</body>
+</html>

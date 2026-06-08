@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Письма | КНУ Exchange</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0f1f;
+            color: white;
+            padding: 40px;
+        }
+        h1 { color: #667eea; margin-bottom: 20px; }
+        .email-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .email-header {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .email-to { color: #667eea; font-weight: bold; }
+        .email-subject { font-size: 1.1rem; font-weight: bold; margin: 10px 0; }
+        .email-body { 
+            white-space: pre-wrap; 
+            background: rgba(0,0,0,0.3); 
+            padding: 20px; 
+            border-radius: 15px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .email-date { color: rgba(255,255,255,0.4); font-size: 0.8rem; }
+        .clear-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            margin-left: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h1>📧 Архив писем (отправленные при регистрации)</h1>
+    <button class="clear-btn" onclick="clearEmails()">🗑️ Очистить все письма</button>
+    <a href="login.html" class="back-btn">← Назад к входу</a>
+    <div id="emailsContainer"></div>
+    
+    <script>
+        function loadEmails() {
+            const emails = JSON.parse(localStorage.getItem('knu_emails') || '[]');
+            const container = document.getElementById('emailsContainer');
+            
+            if (emails.length === 0) {
+                container.innerHTML = '<p style="color: rgba(255,255,255,0.5); text-align: center; padding: 50px;">📭 Нет писем. Зарегистрируйте нового пользователя!</p>';
+                return;
+            }
+            
+            container.innerHTML = emails.reverse().map(email => `
+                <div class="email-card">
+                    <div class="email-header">
+                        <span>📧 <span class="email-to">${email.to}</span></span>
+                        <span class="email-date">📅 ${new Date(email.date).toLocaleString()}</span>
+                    </div>
+                    <div class="email-header">
+                        <span>📋 Копия: <span class="email-to">${email.cc || 'ainazik550@icloud.com'}</span></span>
+                    </div>
+                    <div class="email-subject">📝 ${email.subject}</div>
+                    <div class="email-body">${email.body}</div>
+                </div>
+            `).join('');
+        }
+        
+        function clearEmails() {
+            if (confirm('Удалить все письма?')) {
+                localStorage.removeItem('knu_emails');
+                loadEmails();
+            }
+        }
+        
+        loadEmails();
+    </script>
+</body>
+</html>

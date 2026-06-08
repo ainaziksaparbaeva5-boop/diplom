@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация студента КНУ</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="db.js"></script>
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .form-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        .form label {
+            display: block;
+            margin-bottom: 20px;
+            color: rgba(255,255,255,0.8);
+            font-weight: 500;
+        }
+        .form input, .form select {
+            width: 100%;
+            padding: 12px 16px;
+            margin-top: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+        }
+        .form input:focus, .form select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .checkbox input {
+            width: auto;
+            margin-top: 0;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.6);
+        }
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .message {
+            padding: 15px;
+            border-radius: 16px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        .message.success {
+            background: rgba(40,167,69,0.2);
+            border: 1px solid #28a745;
+            color: #28a745;
+            display: block;
+        }
+        .message.error {
+            background: rgba(220,53,69,0.2);
+            border: 1px solid #dc3545;
+            color: #ff6b6b;
+            display: block;
+        }
+        .header {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .nav a:first-child {
+            margin-left: 0;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">КНУ Exchange</div>
+    <nav class="nav">
+        <a href="index.html">Главная</a>
+        <a href="login.html">Вход</a>
+    </nav>
+</header>
+
+<section class="form-container">
+    <div class="form-card">
+        <h2>📝 Регистрация студента КНУ</h2>
+
+        <form class="form" id="registerForm">
+            <label>ФИО <input type="text" id="fullName" placeholder="Иванов Иван Иванович" required></label>
+            <label>Email <input type="email" id="email" placeholder="student@knu.kg" required></label>
+            <label>Студенческий ID <input type="text" id="studentId" placeholder="KNU2024XXXX" required></label>
+            <label>Факультет <input type="text" id="faculty" placeholder="Факультет информационных технологий" required></label>
+            <label>Курс
+                <select id="course" required>
+                    <option value="">Выберите курс</option>
+                    <option value="1">1 курс</option>
+                    <option value="2">2 курс</option>
+                    <option value="3">3 курс</option>
+                    <option value="4">4 курс</option>
+                </select>
+            </label>
+            <label>Пароль <input type="password" id="password" placeholder="Минимум 6 символов" required></label>
+            <label>Подтверждение пароля <input type="password" id="confirmPassword" placeholder="Повторите пароль" required></label>
+            <label class="checkbox">
+                <input type="checkbox" id="agreeCheckbox" required>
+                Я даю согласие на обработку персональных данных
+            </label>
+            <div id="message" class="message"></div>
+            <button type="submit" class="btn">Зарегистрироваться</button>
+        </form>
+        
+        <div class="login-link">Уже есть аккаунт? <a href="login.html">Войти</a></div>
+    </div>
+</section>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const studentId = document.getElementById('studentId').value;
+        const faculty = document.getElementById('faculty').value;
+        const course = parseInt(document.getElementById('course').value);
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const agreeCheckbox = document.getElementById('agreeCheckbox').checked;
+        const messageDiv = document.getElementById('message');
+        
+        if (!fullName || !email || !studentId || !faculty || !course || !password) {
+            messageDiv.innerHTML = '❌ Заполните все обязательные поля';
+            messageDiv.className = 'message error';
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            messageDiv.innerHTML = '❌ Пароли не совпадают';
+            messageDiv.className = 'message error';
+            return;
+        }
+        
+        if (password.length < 6) {
+            messageDiv.innerHTML = '❌ Пароль должен содержать минимум 6 символов';
+            messageDiv.className = 'message error';
+            return;
+        }
+        
+        if (!agreeCheckbox) {
+            messageDiv.innerHTML = '❌ Подтвердите согласие на обработку данных';
+            messageDiv.className = 'message error';
+            return;
+        }
+        
+        try {
+            await db.registerUser({ fullName, email, studentId, faculty, course, password });
+            messageDiv.innerHTML = '✅ Регистрация успешна! Перенаправление на страницу входа...';
+            messageDiv.className = 'message success';
+            setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+        } catch (error) {
+            messageDiv.innerHTML = '❌ ' + error.message;
+            messageDiv.className = 'message error';
+        }
+    });
+</script>
+</body>
+</html>

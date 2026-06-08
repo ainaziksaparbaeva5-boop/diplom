@@ -1,0 +1,609 @@
+/* ===== ПОДКЛЮЧЕНИЕ ШРИФТОВ ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+/* ===== ОБЩИЕ СТИЛИ ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #4158D0;
+    --primary-light: #6c7ee0;
+    --secondary: #C850C0;
+    --accent: #FFCC70;
+    --dark: #1a1a2e;
+    --darker: #16213e;
+    --light: #f1f5f9;
+    --gradient-1: linear-gradient(135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+    --gradient-2: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-3: linear-gradient(135deg, #434343 0%, #000000 100%);
+    --shadow-sm: 0 5px 15px rgba(0,0,0,0.1);
+    --shadow-md: 0 10px 30px rgba(0,0,0,0.15);
+    --shadow-lg: 0 20px 50px rgba(0,0,0,0.2);
+    --shadow-hover: 0 30px 60px rgba(65,88,208,0.3);
+    --border-radius: 24px;
+    --border-radius-sm: 16px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--darker);
+    color: var(--light);
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Анимированный фон */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 50%, rgba(65,88,208,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(200,80,192,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255,204,112,0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ===== HEADER СТЕКЛЯННЫЙ ЭФФЕКТ ===== */
+.header {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 2rem;
+    font-weight: 800;
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1px;
+    position: relative;
+    padding: 0.5rem 0;
+}
+
+.logo::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 3px;
+    background: var(--gradient-1);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.logo:hover::after {
+    width: 100%;
+}
+
+.nav {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav a {
+    color: var(--light);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.7rem 1.2rem;
+    border-radius: 40px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nav a i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.nav a:hover {
+    background: var(--gradient-2);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+    border-color: transparent;
+}
+
+.nav a:hover i {
+    transform: scale(1.2);
+}
+
+/* ===== HERO СОВРЕМЕННЫЙ ===== */
+.hero {
+    position: relative;
+    text-align: center;
+    padding: 150px 40px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin: 30px 5%;
+    background: var(--gradient-1);
+    box-shadow: var(--shadow-lg);
+}
+
+.hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    opacity: 0.2;
+    mix-blend-mode: overlay;
+    filter: blur(5px);
+}
+
+.hero h1 {
+    position: relative;
+    z-index: 1;
+    font-size: 4rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 20px;
+    text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: fadeInUp 1s ease;
+}
+
+.hero p {
+    position: relative;
+    z-index: 1;
+    font-size: 1.4rem;
+    color: rgba(255,255,255,0.95);
+    margin-bottom: 40px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    animation: fadeInUp 1s ease 0.2s both;
+}
+
+.hero .btn {
+    position: relative;
+    z-index: 1;
+    padding: 18px 45px;
+    border-radius: 50px;
+    background: white;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    border: 2px solid transparent;
+    animation: fadeInUp 1s ease 0.4s both;
+}
+
+.hero .btn:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    background: transparent;
+    color: white;
+    border-color: white;
+}
+
+/* ===== СЕКЦИИ ===== */
+.section {
+    padding: 80px 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section h2 {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 50px;
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+    letter-spacing: -1px;
+    position: relative;
+}
+
+.section h2::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: var(--gradient-1);
+    border-radius: 4px;
+}
+
+/* ===== КАРТОЧКИ СОВРЕМЕННЫЕ ===== */
+.platform-container,
+.programs-container,
+.steps,
+.requirements-cards,
+.university-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 20px 0;
+}
+
+.platform-card,
+.program-card,
+.step,
+.requirement-card,
+.university-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    padding: 40px 30px;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.platform-card::before,
+.program-card::before,
+.step::before,
+.requirement-card::before,
+.university-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-1);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: -1;
+}
+
+.platform-card:hover,
+.program-card:hover,
+.step:hover,
+.requirement-card:hover,
+.university-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    border-color: transparent;
+    box-shadow: var(--shadow-hover);
+}
+
+.platform-card:hover::before,
+.program-card:hover::before,
+.step:hover::before,
+.requirement-card:hover::before,
+.university-card:hover::before {
+    opacity: 0.1;
+}
+
+.platform-card h3,
+.program-card h3,
+.step h3,
+.requirement-card h3,
+.university-card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.program-card img.program-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 20px;
+    transition: transform 0.5s ease;
+    border: 3px solid rgba(255,255,255,0.1);
+}
+
+.program-card:hover img.program-img {
+    transform: scale(1.08);
+}
+
+/* ===== КНОПКИ ===== */
+.btn, .btn-university, .apply-btn, .back-btn {
+    display: inline-block;
+    padding: 14px 35px;
+    border-radius: 40px;
+    background: var(--gradient-1);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(65,88,208,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before, .btn-university::before, .apply-btn::before, .back-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:hover, .btn-university:hover, .apply-btn:hover, .back-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(65,88,208,0.5);
+}
+
+.btn:hover::before, .btn-university:hover::before, .apply-btn:hover::before, .back-btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* ===== СТРАНИЦЫ ПРОГРАММ ===== */
+.country-page {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 5%;
+}
+
+.country-header {
+    background: var(--gradient-2);
+    border-radius: var(--border-radius);
+    padding: 80px 40px;
+    margin-bottom: 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.country-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 50%);
+    animation: rotate 20s linear infinite;
+}
+
+.country-title {
+    font-size: 4rem;
+    color: white;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.country-subtitle {
+    font-size: 1.4rem;
+    color: rgba(255,255,255,0.95);
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.university-card {
+    text-align: left;
+    padding: 30px;
+}
+
+.university-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--gradient-1);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.university-flag {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.university-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+    padding: 15px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.university-meta span {
+    background: rgba(255,255,255,0.05);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.university-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--light);
+    opacity: 0.9;
+}
+
+.detail-item i {
+    width: 20px;
+    color: var(--accent);
+}
+
+/* ===== CTA ===== */
+.cta {
+    background: var(--gradient-2);
+    border-radius: var(--border-radius);
+    padding: 100px 40px;
+    margin: 60px 5%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.cta h2 {
+    font-size: 3.5rem;
+    color: white;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.cta p {
+    font-size: 1.3rem;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+.cta .btn.big {
+    padding: 20px 50px;
+    font-size: 1.4rem;
+    background: white;
+    color: var(--primary);
+}
+
+/* ===== ФУТЕР ===== */
+.footer {
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 50px 5%;
+    text-align: center;
+    margin-top: 80px;
+}
+
+.footer a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: white;
+}
+
+/* ===== АНИМАЦИИ ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        padding: 20px;
+    }
+    
+    .nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero p {
+        font-size: 1.2rem;
+    }
+    
+    .section h2 {
+        font-size: 2.2rem;
+    }
+    
+    .country-title {
+        font-size: 2.5rem;
+    }
+    
+    .country-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .cta h2 {
+        font-size: 2.2rem;
+    }
+}
+
+/* ===== СКРОЛЛБАР ===== */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--darker);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gradient-1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gradient-2);
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Мои данные</title>
+</head>
+<body style="background: #0a0f1f; color: white; font-family: monospace; padding: 20px;">
+    <h1 style="color: #667eea;">📊 Сохранённые данные</h1>
+    
+    <h2>👥 Пользователи:</h2>
+    <pre style="background: #1a1a2e; padding: 15px; border-radius: 10px;" id="users"></pre>
+    
+    <h2>📝 Заявки:</h2>
+    <pre style="background: #1a1a2e; padding: 15px; border-radius: 10px;" id="apps"></pre>
+    
+    <h2>📊 Уровень языка:</h2>
+    <pre style="background: #1a1a2e; padding: 15px; border-radius: 10px;" id="level"></pre>
+    
+    <button onclick="showData()" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer;">Показать данные</button>
+    
+    <script>
+        function showData() {
+            // Пользователи
+            const users = localStorage.getItem('knu_users');
+            document.getElementById('users').innerHTML = users || 'Нет пользователей';
+            
+            // Заявки
+            const apps = localStorage.getItem('knu_applications');
+            document.getElementById('apps').innerHTML = apps || 'Нет заявок';
+            
+            // Уровень языка
+            const level = localStorage.getItem('languageLevel');
+            document.getElementById('level').innerHTML = level || 'Нет результата';
+        }
+        
+        showData();
+    </script>
+</body>
+</html>

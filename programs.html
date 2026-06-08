@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Все программы — КНУ</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .programs-header {
+            background: var(--gradient-2);
+            text-align: center;
+            padding: 80px 20px;
+            margin: 30px 5%;
+            border-radius: var(--border-radius);
+        }
+        .programs-header h1 {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .programs-header p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .filters {
+            max-width: 1200px;
+            margin: -30px auto 30px;
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .search-input, .country-filter {
+            padding: 12px 20px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 16px;
+            min-width: 250px;
+            cursor: pointer;
+        }
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+        .search-input:focus, .country-filter:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .country-filter option {
+            background: var(--darker);
+        }
+
+        .programs-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 5%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .stats {
+            text-align: center;
+            margin: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 1.1rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px;
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.6);
+            grid-column: 1 / -1;
+        }
+
+        .program-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            text-align: center;
+            transition: all 0.4s ease;
+            height: 420px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .program-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+        .program-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 15px;
+        }
+        .program-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+        .program-card p {
+            font-size: 0.85rem;
+            margin: 5px 0;
+            color: rgba(255,255,255,0.8);
+        }
+        .program-card .btn {
+            margin-top: auto;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        /* МОДАЛЬНОЕ ОКНО */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(15px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #16213e;
+            border-radius: var(--border-radius);
+            max-width: 650px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 40px;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: var(--shadow-lg);
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 35px;
+            cursor: pointer;
+            color: white;
+            transition: 0.3s;
+        }
+        .modal-close:hover {
+            color: var(--accent);
+        }
+        .modal h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        .modal h3 {
+            color: var(--accent);
+            margin: 20px 0 10px;
+            font-size: 1.2rem;
+        }
+        .modal p, .modal li {
+            color: rgba(255,255,255,0.85);
+            line-height: 1.6;
+        }
+        .modal ul {
+            padding-left: 20px;
+            margin: 15px 0;
+        }
+        .modal .btn {
+            margin-top: 30px;
+            width: 100%;
+        }
+        .requirement-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin: 5px 5px 0 0;
+        }
+        .city-info-modal {
+            background: rgba(255, 200, 100, 0.15);
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+        .city-name-modal {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 1200px) {
+            .programs-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 900px) {
+            .programs-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .programs-grid { grid-template-columns: 1fr; }
+            .programs-header h1 { font-size: 2rem; }
+            .modal-content { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">🌍 КНУ Exchange</div>
+    <nav class="nav">
+        <a href="index.html">🏠 Главная</a>
+        <a href="programs.html">📚 Программы</a>
+        <a href="language-test.html">📝 Тест языка</a>
+        <a href="apply.html">✈️ Подать заявку</a>
+        <a href="dashboard.html">👤 Личный кабинет</a>
+        <a href="login.html">🔑 Вход</a>
+    </nav>
+</header>
+
+<div class="programs-header">
+    <h1>🌍 Все программы обмена</h1>
+    <p>Нажми на карточку, чтобы узнать подробности о программе и городе</p>
+</div>
+
+<div class="filters">
+    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по названию, стране...">
+    <select id="countryFilter" class="country-filter">
+        <option value="">Все страны</option>
+        <option value="Германия">🇩🇪 Германия</option>
+        <option value="Турция">🇹🇷 Турция</option>
+        <option value="Южная Корея">🇰🇷 Южная Корея</option>
+        <option value="Казахстан">🇰🇿 Казахстан</option>
+        <option value="Китай">🇨🇳 Китай</option>
+        <option value="Япония">🇯🇵 Япония</option>
+        <option value="Россия">🇷🇺 Россия</option>
+    </select>
+</div>
+
+<div class="stats" id="stats"></div>
+<div class="programs-grid" id="programsContainer"></div>
+
+<footer class="footer">
+    <p>© 2026 КНУ Exchange | <a href="mailto:info@knu.kg">info@knu.kg</a></p>
+</footer>
+
+<!-- МОДАЛЬНОЕ ОКНО -->
+<div id="programModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+    const programs = [
+        { id: 1, name: "Erasmus+", country: "Германия", city: "Гейдельберг", cityDesc: "Старейший университетский город Германии на реке Неккар. Знаменит замком Гейдельберг и исторической архитектурой. Город, где наука и традиции встречаются.", university: "Universität Heidelberg", gpa: "3.5+", language: "B2", duration: "1 семестр", icon: "🇩🇪", image: "images/germany.jpg" },
+        { id: 2, name: "Academic Mobility", country: "Турция", city: "Анкара", cityDesc: "Столица Турции, современный город с богатой историей. Здесь находится мавзолей Ататюрка (Аныткабир), множество музеев и парков. Город контрастов: древность и современность.", university: "Middle East Technical University", gpa: "3.2+", language: "B1", duration: "1 семестр", icon: "🇹🇷", image: "images/turkey.jpg" },
+        { id: 3, name: "Летняя стажировка", country: "Южная Корея", city: "Сеул", cityDesc: "Столица Южной Кореи, мегаполис с небоскрёбами, буддийскими храмами и знаменитой уличной едой. Город, который не спит никогда, сочетание передовых технологий и древних традиций.", university: "Seoul National University", gpa: "3.0+", language: "B1", duration: "2 месяца", icon: "🇰🇷", image: "images/korea.jpg" },
+        { id: 4, name: "Обмен в Казахстане", country: "Казахстан", city: "Астана", cityDesc: "Современная столица Казахстана с уникальной архитектурой. Молодой и динамичный город, где находится Байтерек, Хан Шатыр и множество современных зданий.", university: "ЕНУ им. Гумилева", gpa: "3.0+", language: "B1", duration: "1 семестр", icon: "🇰🇿", image: "images/kaz.jpeg" },
+        { id: 5, name: "Стажировка в Китае", country: "Китай", city: "Пекин", cityDesc: "Столица Китая, город с тысячелетней историей. Здесь находятся Великая Китайская стена, Запретный город, храм Неба. Мегаполис, где древность встречается с будущим.", university: "Tsinghua University", gpa: "3.2+", language: "B2", duration: "1 год", icon: "🇨🇳", image: "images/kit.jpeg" },
+        { id: 6, name: "Study in Japan", country: "Япония", city: "Токио", cityDesc: "Столица Японии, футуристический город с древними храмами, лучшей кухней и передовыми технологиями. Город неоновых огней, сакур и традиционных чайных церемоний.", university: "University of Tokyo", gpa: "3.5+", language: "B2", duration: "1 семестр", icon: "🇯🇵", image: "images/japan.jpeg" },
+        { id: 7, name: "Обучение в Москве", country: "Россия", city: "Москва", cityDesc: "Столица России, крупнейший мегаполис, сердце культуры, бизнеса и образования. Красная площадь, Кремль, МГУ — символы величия и истории.", university: "МГУ им. Ломоносова", gpa: "3.0+", language: "B1", duration: "1 семестр", icon: "🇷🇺", image: "images/mos.jpeg" },
+        { id: 8, name: "Наука в Новосибирске", country: "Россия", city: "Новосибирск", cityDesc: "Научная столица Сибири, Академгородок, центр инноваций и исследований. Город молодых учёных, современной архитектуры и сибирского гостеприимства.", university: "НГУ", gpa: "3.0+", language: "B1", duration: "1 семестр", icon: "🇷🇺", image: "images/novo.jpeg" }
+    ];
+
+    const programDetails = {
+        1: { requirements: "Средний балл от 3.5, владение немецким или английским на уровне B2", documents: "Загранпаспорт, транскрипт, мотивационное письмо, 2 рекомендации", deadline: "До 15 марта 2026 года", scholarship: "Стипендия Erasmus+ покрывает проживание и перелёт (800€/мес)", accommodation: "Общежитие университета или частные апартаменты", credits: "30 ECTS кредитов за семестр" },
+        2: { requirements: "GPA от 3.2, английский B1", documents: "Паспорт, справка об обучении, IELTS 5.5 (при наличии)", deadline: "До 1 апреля 2026", scholarship: "Стипендия Mevlana — 600$ в месяц", accommodation: "Студенческое общежитие гарантировано", credits: "25-30 ECTS" },
+        3: { requirements: "GPA от 3.0, базовый английский или корейский", documents: "Заявка, резюме, мотивационное письмо", deadline: "До 1 мая 2026", scholarship: "Частичное покрытие (500$), оплата проживания", accommodation: "Гостевой дом университета", credits: "12 кредитов" },
+        4: { requirements: "GPA от 3.0, русский или казахский", documents: "Заявление, транскрипт, языковой сертификат (при наличии)", deadline: "До 20 июня 2026", scholarship: "Обмен без стипендии, но низкая стоимость обучения", accommodation: "Общежитие (50$/мес)", credits: "25 ECTS" },
+        5: { requirements: "GPA от 3.2, HSK 4 или английский B2", documents: "Паспорт, нотариально заверенные документы, медицинская справка", deadline: "До 1 марта 2026", scholarship: "Грант CNS — 1500¥ в месяц", accommodation: "Международное общежитие", credits: "20 кредитов" },
+        6: { requirements: "GPA от 3.5, японский N3 или английский B2", documents: "Резюме, исследовательское предложение, 2 рекомендации", deadline: "До 30 января 2026", scholarship: "MEXT — 120 000¥ в месяц", accommodation: "Субсидированное жильё", credits: "28 ECTS" },
+        7: { requirements: "GPA от 3.0, русский язык (свободно)", documents: "Паспорт, диплом/справка, фото 3x4", deadline: "До 1 июля 2026", scholarship: "Квоты Россотрудничества (оплата обучения)", accommodation: "Общежитие МГУ", credits: "30 кредитов" },
+        8: { requirements: "GPA от 3.0, русский или английский B1", documents: "Заявка, научные публикации (приветствуются)", deadline: "До 15 мая 2026", scholarship: "Стипендия НГУ — 15 000 руб/мес", accommodation: "Комфортабельное общежитие", credits: "24 ECTS" }
+    };
+
+    function getCurrentUser() {
+        const userStr = sessionStorage.getItem('currentUser');
+        return userStr ? JSON.parse(userStr) : null;
+    }
+
+    function applyToProgram(program) {
+        const user = getCurrentUser();
+        if (!user) {
+            if (confirm('❌ Для подачи заявки нужно войти. Перейти на страницу входа?')) {
+                window.location.href = 'login.html';
+            }
+            return;
+        }
+        localStorage.setItem('selectedProgram', JSON.stringify(program));
+        window.location.href = 'apply.html';
+    }
+
+    function openModal(programId) {
+        const prog = programs.find(p => p.id === programId);
+        const details = programDetails[programId];
+        
+        const modalBody = document.getElementById('modalBody');
+        modalBody.innerHTML = `
+            <h2>${prog.icon} ${prog.name}</h2>
+            <p><strong>📍 Страна:</strong> ${prog.country}</p>
+            <p><strong>🏛️ Университет:</strong> ${prog.university}</p>
+            <p><strong>⏱️ Длительность:</strong> ${prog.duration}</p>
+            
+            <div class="city-info-modal">
+                <div class="city-name-modal">🏙️ О городе ${prog.city}</div>
+                <p>${prog.cityDesc}</p>
+            </div>
+            
+            <h3>📋 Требования</h3>
+            <p>${details.requirements}</p>
+            <div>
+                <span class="requirement-badge">GPA ${prog.gpa}</span>
+                <span class="requirement-badge">Язык: ${prog.language}</span>
+            </div>
+            
+            <h3>📄 Необходимые документы</h3>
+            <ul>
+                ${details.documents.split(', ').map(d => `<li>📌 ${d}</li>`).join('')}
+            </ul>
+            
+            <h3>💰 Финансирование и стипендия</h3>
+            <p>${details.scholarship}</p>
+            
+            <h3>🏠 Проживание</h3>
+            <p>${details.accommodation}</p>
+            
+            <h3>📅 Дедлайн подачи</h3>
+            <p>⏰ ${details.deadline}</p>
+            
+            <h3>🎓 Академические кредиты</h3>
+            <p>${details.credits}</p>
+            
+            <button class="btn" onclick="applyFromModal(${programId})">📝 Подать заявку сейчас</button>
+        `;
+        
+        document.getElementById('programModal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('programModal').classList.remove('active');
+    }
+
+    function applyFromModal(programId) {
+        const program = programs.find(p => p.id === programId);
+        closeModal();
+        applyToProgram(program);
+    }
+
+    document.getElementById('programModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('programModal')) {
+            closeModal();
+        }
+    });
+
+    function renderPrograms() {
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+        const countryValue = document.getElementById('countryFilter').value;
+        
+        const filtered = programs.filter(prog => {
+            const matchSearch = prog.name.toLowerCase().includes(searchText) ||
+                               prog.country.toLowerCase().includes(searchText) ||
+                               prog.city.toLowerCase().includes(searchText);
+            const matchCountry = !countryValue || prog.country === countryValue;
+            return matchSearch && matchCountry;
+        });
+        
+        const container = document.getElementById('programsContainer');
+        const stats = document.getElementById('stats');
+        
+        stats.innerHTML = `📚 Найдено программ: ${filtered.length} из ${programs.length}`;
+        
+        if (filtered.length === 0) {
+            container.innerHTML = '<div class="no-results">😕 Ничего не найдено. Попробуй изменить поиск</div>';
+            return;
+        }
+        
+        container.innerHTML = '';
+        
+        filtered.forEach(prog => {
+            const card = document.createElement('div');
+            card.className = 'program-card';
+            card.innerHTML = `
+                <img src="${prog.image}" class="program-img" alt="${prog.name}" onerror="this.src='https://placehold.co/400x180?text=Фото+не+доступно'">
+                <h3>${prog.icon} ${prog.name}</h3>
+                <p>📍 ${prog.country} / ${prog.city}</p>
+                <p>🏛️ ${prog.university}</p>
+                <p>📊 GPA: ${prog.gpa} | 🗣️ ${prog.language}</p>
+                <p>⏱️ ${prog.duration}</p>
+                <button class="btn">📖 Подробнее</button>
+            `;
+            
+            const btn = card.querySelector('.btn');
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                openModal(prog.id);
+            };
+            
+            card.onclick = () => openModal(prog.id);
+            
+            container.appendChild(card);
+        });
+    }
+    
+    document.getElementById('searchInput').addEventListener('input', renderPrograms);
+    document.getElementById('countryFilter').addEventListener('change', renderPrograms);
+    renderPrograms();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Статус заявки — КНУ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="db.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0f1f;
+            color: #fff;
+            min-height: 100vh;
+        }
+        .status-container { max-width: 800px; margin: 60px auto; padding: 0 20px; }
+        .page-title { font-size: 2rem; color: #667eea; margin-bottom: 30px; }
+        .app-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 28px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .badge-pending { background: rgba(255,193,7,0.2); border: 1px solid #ffc107; color: #ffc107; padding: 5px 15px; border-radius: 30px; display: inline-block; }
+        .badge-approved { background: rgba(40,167,69,0.2); border: 1px solid #28a745; color: #28a745; display: inline-block; padding: 5px 15px; border-radius: 30px; }
+        .badge-rejected { background: rgba(220,53,69,0.2); border: 1px solid #dc3545; color: #dc3545; display: inline-block; padding: 5px 15px; border-radius: 30px; }
+        .empty-state { text-align: center; padding: 60px; color: rgba(255,255,255,0.4); }
+        .header {
+            background: rgba(10,15,31,0.8);
+            backdrop-filter: blur(20px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .footer {
+            background: rgba(0,0,0,0.5);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="logo">🌍 КНУ Exchange</div>
+    <nav class="nav">
+        <a href="index.html">Главная</a>
+        <a href="dashboard.html">Личный кабинет</a>
+        <a href="apply.html">Подать заявку</a>
+    </nav>
+</header>
+
+<div class="status-container">
+    <div class="page-title"><i class="fas fa-tasks"></i> Статус заявок</div>
+    <div id="appsList"></div>
+</div>
+
+<footer class="footer">
+    <p>© 2026 КНУ Exchange | <a href="mailto:info@knu.kg">info@knu.kg</a></p>
+</footer>
+
+<script>
+    async function renderStatus() {
+        const user = db.getCurrentUser();
+        const container = document.getElementById('appsList');
+        
+        if (!user) {
+            container.innerHTML = `<div class="empty-state"><h3>🔒 Необходима авторизация</h3><a href="login.html" style="color:#667eea;">Войти</a></div>`;
+            return;
+        }
+        
+        const apps = await db.getUserApplications();
+        if (apps.length === 0) {
+            container.innerHTML = `<div class="empty-state"><h3>📭 Заявок пока нет</h3><a href="apply.html" style="color:#667eea;">Подать заявку</a></div>`;
+            return;
+        }
+        
+        container.innerHTML = apps.map(app => `
+            <div class="app-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <h3>🌍 ${app.program}</h3>
+                    <span class="badge-${app.status}">${app.status === 'pending' ? '⏳ На рассмотрении' : (app.status === 'approved' ? '✅ Одобрена' : '❌ Отклонена')}</span>
+                </div>
+                <p style="margin-top: 10px;"><i class="fas fa-calendar-alt"></i> Подано: ${new Date(app.createdAt).toLocaleDateString()}</p>
+                ${app.adminComment ? `<p style="margin-top: 10px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 12px;"><i class="fas fa-comment"></i> Комментарий: ${app.adminComment}</p>` : ''}
+            </div>
+        `).join('');
+    }
+    
+    renderStatus();
+</script>
+</body>
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест уровня языка | КНУ Exchange</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="db.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0f1f;
+            color: #fff;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: rgba(10,15,31,0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .nav {
+            display: flex;
+            gap: 1rem;
+        }
+        .nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            transition: 0.3s;
+        }
+        .nav a:hover {
+            background: #667eea;
+            color: white;
+        }
+        .test-container {
+            flex: 1;
+            padding: 2rem 5%;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .test-card {
+            background: rgba(255,255,255,0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 30px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+        h2 i { color: #667eea; }
+        .test-description {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 3px solid #667eea;
+        }
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            z-index: 1;
+        }
+        .progress-step {
+            position: relative;
+            z-index: 2;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.5);
+        }
+        .progress-step.active {
+            border-color: #667eea;
+            color: #667eea;
+            background: rgba(102,126,234,0.1);
+        }
+        .progress-step.completed {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+        .questions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin: 1.5rem 0;
+        }
+        .question-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 1.2rem;
+        }
+        .question-text {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.7rem 1rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .option:hover {
+            background: rgba(102,126,234,0.05);
+            border-color: rgba(102,126,234,0.2);
+        }
+        .option input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #667eea;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: 0.3s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+        }
+        .result-container {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            display: none;
+        }
+        .result-container.show { display: block; }
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .result-level {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            padding: 0.8rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .level-A1 { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .level-A2 { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+        .level-B1 { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .level-B2 { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .level-C1 { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .level-C2 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .result-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .stat-item {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 0.8rem;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            text-align: center;
+            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
+            color: white;
+            background: rgba(255,255,255,0.02);
+            cursor: pointer;
+        }
+        .action-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+        }
+        .footer {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        @media (max-width: 768px) {
+            .header { flex-direction: column; gap: 0.8rem; }
+            .nav { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">🌍 КНУ Exchange</div>
+    <nav class="nav">
+        <a href="index.html"><i class="fas fa-home"></i> Главная</a>
+        <a href="programs.html"><i class="fas fa-book"></i> Программы</a>
+        <a href="language-test.html"><i class="fas fa-language"></i> Тест языка</a>
+        <a href="apply.html"><i class="fas fa-paper-plane"></i> Подать заявку</a>
+        <a href="dashboard.html"><i class="fas fa-user"></i> Кабинет</a>
+        <a href="login.html"><i class="fas fa-sign-in-alt"></i> Вход</a>
+    </nav>
+</header>
+
+<div class="test-container">
+    <div class="test-card">
+        <h2><i class="fas fa-language"></i> Тест уровня английского</h2>
+        <div class="test-description">Ответьте на 8 вопросов для определения вашего уровня языка</div>
+
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-step active">1</div>
+            <div class="progress-step">2</div>
+            <div class="progress-step">3</div>
+            <div class="progress-step">4</div>
+            <div class="progress-step">5</div>
+            <div class="progress-step">6</div>
+            <div class="progress-step">7</div>
+            <div class="progress-step">8</div>
+        </div>
+
+        <form id="languageTestForm">
+            <div class="questions-container" id="questionsContainer"></div>
+            <button type="submit" class="btn-submit"><i class="fas fa-check-circle"></i> Проверить результаты</button>
+        </form>
+
+        <div id="testResult" class="result-container">
+            <div class="result-title"><i class="fas fa-star"></i> Ваш уровень</div>
+            <div id="resultLevel" class="result-level"></div>
+            <div id="resultDescription" class="result-description" style="margin-bottom:1rem;"></div>
+            <div class="result-stats">
+                <div class="stat-item"><div class="stat-value" id="correctAnswers">0</div><div class="stat-label">правильных</div></div>
+                <div class="stat-item"><div class="stat-value" id="totalQuestions">8</div><div class="stat-label">всего</div></div>
+            </div>
+            <div class="action-buttons">
+                <a href="apply.html" class="action-btn primary"><i class="fas fa-paper-plane"></i> Подать заявку</a>
+                <a href="programs.html" class="action-btn"><i class="fas fa-book"></i> Программы</a>
+                <button onclick="resetTest()" class="action-btn"><i class="fas fa-redo"></i> Заново</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>© 2026 КНУ Exchange | <a href="mailto:info@knu.kg">info@knu.kg</a></p>
+</footer>
+
+<script>
+    // Вопросы
+    const questions = [
+        { text: "I _____ to the university every day.", options: ["goed", "go", "goes"], correct: 1 },
+        { text: "She _____ already _____ her homework.", options: ["has / done", "have / do", "did / done"], correct: 0 },
+        { text: "This is the _____ book I have ever read.", options: ["best", "better", "good"], correct: 0 },
+        { text: "If I _____ you, I would study harder.", options: ["was", "were", "am"], correct: 1 },
+        { text: "They _____ living in London since 2020.", options: ["are", "were", "have been"], correct: 2 },
+        { text: "The movie _____ by Spielberg.", options: ["directed", "was directed", "directing"], correct: 1 },
+        { text: "I wish I _____ play the piano.", options: ["can", "could", "will"], correct: 1 },
+        { text: "By next year, I _____ my degree.", options: ["finish", "will finish", "will have finished"], correct: 2 }
+    ];
+
+    function renderQuestions() {
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = '';
+        questions.forEach((q, idx) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question-card';
+            qDiv.innerHTML = `
+                <div class="question-text"><i class="fas fa-question-circle"></i> ${idx+1}. ${q.text}</div>
+                <div class="options">
+                    ${q.options.map((opt, optIdx) => `
+                        <label class="option">
+                            <input type="radio" name="q${idx+1}" value="${optIdx === q.correct ? 1 : 0}" required>
+                            <span>${opt}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(qDiv);
+        });
+    }
+
+    function getLevel(score) {
+        if (score <= 2) return { level: 'A1', name: 'Начальный', color: 'level-A1', desc: 'Вы понимаете простые фразы. Рекомендуем языковые курсы.' };
+        if (score <= 4) return { level: 'A2', name: 'Элементарный', color: 'level-A2', desc: 'Вы можете общаться в простых ситуациях.' };
+        if (score <= 5) return { level: 'B1', name: 'Средний', color: 'level-B1', desc: 'Подходит для программ обмена.' };
+        if (score <= 6) return { level: 'B2', name: 'Выше среднего', color: 'level-B2', desc: 'Хорошо для учебы за рубежом.' };
+        if (score <= 7) return { level: 'C1', name: 'Продвинутый', color: 'level-C1', desc: 'Отлично для академических программ.' };
+        return { level: 'C2', name: 'Профессиональный', color: 'level-C2', desc: 'Свободное владение. Любые программы.' };
+    }
+
+    function updateProgress(answeredCount) {
+        const steps = document.querySelectorAll('.progress-step');
+        steps.forEach((step, idx) => {
+            if (idx < answeredCount) step.classList.add('completed');
+            else step.classList.remove('completed');
+            if (idx === answeredCount) step.classList.add('active');
+            else if (idx !== answeredCount) step.classList.remove('active');
+        });
+    }
+
+    function resetTest() {
+        document.getElementById('languageTestForm').reset();
+        document.getElementById('testResult').classList.remove('show');
+        const steps = document.querySelectorAll('.progress-step');
+        steps.forEach((step, idx) => {
+            step.classList.remove('completed', 'active');
+        });
+        if (steps[0]) steps[0].classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    renderQuestions();
+
+    // Отслеживание прогресса
+    const radioGroups = document.querySelectorAll('input[type="radio"]');
+    function trackProgress() {
+        let answered = 0;
+        for (let i = 1; i <= questions.length; i++) {
+            const checked = document.querySelector(`input[name="q${i}"]:checked`);
+            if (checked) answered++;
+        }
+        updateProgress(answered);
+    }
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.addEventListener('change', trackProgress));
+
+    document.getElementById('languageTestForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const answers = [];
+        for (let i = 1; i <= questions.length; i++) {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            if (!selected) {
+                alert('Ответьте на все вопросы');
+                return;
+            }
+            answers.push(parseInt(selected.value));
+        }
+        const correct = answers.reduce((sum, val) => sum + val, 0);
+        const result = getLevel(correct);
+
+        // Сохраняем результат через db.js
+        const currentUser = db.getCurrentUser();
+        if (currentUser) {
+            try {
+                await db.saveTestResult({
+                    level: result.level,
+                    score: Math.round((correct / questions.length) * 100),
+                    total: questions.length,
+                    language: 'Английский'
+                });
+                console.log('Результат теста сохранён в БД');
+            } catch (err) {
+                console.error('Ошибка сохранения:', err);
+            }
+        } else {
+            // Если не авторизован, сохраняем в localStorage как запасной вариант
+            localStorage.setItem('languageLevel', result.level);
+            console.log('Пользователь не авторизован, сохранено в localStorage');
+        }
+
+        // Отображаем результат
+        const resultContainer = document.getElementById('testResult');
+        const resultLevelDiv = document.getElementById('resultLevel');
+        const resultDesc = document.getElementById('resultDescription');
+        const correctSpan = document.getElementById('correctAnswers');
+        
+        resultLevelDiv.className = `result-level ${result.color}`;
+        resultLevelDiv.innerHTML = `${result.level} — ${result.name}`;
+        resultDesc.textContent = result.desc;
+        correctSpan.textContent = correct;
+        
+        resultContainer.classList.add('show');
+        resultContainer.scrollIntoView({ behavior: 'smooth' });
+    });
+</script>
+</body>
+</html>
