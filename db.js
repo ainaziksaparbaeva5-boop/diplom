@@ -262,27 +262,28 @@ function logoutUser() {
 // ═══════════════════════════════════════════════════════
 
 async function saveApplication(applicationData) {
-  const user = getCurrentUser();
-  if (!user) throw new Error('Пользователь не авторизован');
-
-  const db  = readLocalDB();
-  const id  = genId();
-
-  const app = {
-    id,
-    ui:  user.id,
-    un:  user.fullName,
-    ue:  user.email,
-    p:   applicationData.program,
-    st:  0,   // 0=pending, 1=approved, 2=rejected
-    t:   new Date().toISOString()
-  };
-
-  db.a.push(app);
-  await tgWriteDB(db);
-  await tgNotify('app', app);
-  await addNotification(user.id, '📋 Заявка отправлена', `Заявка на программу "${applicationData.program}" успешно отправлена.`);
-  return id;
+    const user = getCurrentUser();
+    if (!user) throw new Error('Пользователь не авторизован');
+    const db = readLocalDB();
+    const id = genId();
+    const app = {
+        id,
+        ui: user.id,
+        un: user.fullName,
+        ue: user.email,
+        p: applicationData.program,
+        gpa: applicationData.gpa || 0,
+        lang: applicationData.languageLevel || '',
+        motivation: applicationData.motivationText || '',
+        docs: applicationData.documents || {},
+        st: 0,
+        t: new Date().toISOString()
+    };
+    db.a.push(app);
+    await tgWriteDB(db);
+    await tgNotify('app', app);
+    await addNotification(user.id, '📋 Заявка отправлена', `Заявка на программу "${applicationData.program}" успешно отправлена. Документы приложены.`);
+    return id;
 }
 
 async function getUserApplications() {
