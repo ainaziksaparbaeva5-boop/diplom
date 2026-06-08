@@ -287,22 +287,26 @@ async function saveApplication(applicationData) {
 }
 
 async function getUserApplications() {
-  const user = getCurrentUser();
-  if (!user) return [];
-  const db = readLocalDB();
-  return db.a
-    .filter(a => a.ui === user.id)
-    .sort((a, b) => new Date(b.t) - new Date(a.t))
-    .map(a => ({
-      id:        a.id,
-      program:   a.p,
-      status:    ['pending','approved','rejected'][a.st],
-      createdAt: a.t,
-      userEmail: a.ue,
-      userName:  a.un
-    }));
+    const user = getCurrentUser();
+    if (!user) return [];
+    const db = readLocalDB();
+    return db.a
+        .filter(a => a.ui === user.id)
+        .sort((a, b) => new Date(b.t) - new Date(a.t))
+        .map(a => ({
+            id: a.id,
+            program: a.p,
+            gpa: a.gpa || 0,
+            languageLevel: a.lang || '',
+            motivationText: a.motivation || '',
+            documents: a.docs || {},
+            status: ['pending', 'approved', 'rejected'][a.st] || 'pending',
+            createdAt: a.t,
+            userEmail: a.ue,
+            userName: a.un,
+            adminComment: a.cm || ''
+        }));
 }
-
 async function updateApplicationStatus(applicationId, status, comment = '') {
   const user = getCurrentUser();
   if (!user || user.role !== 'admin') throw new Error('Недостаточно прав');
