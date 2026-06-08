@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>Все программы — КНУ</title>
     <link rel="stylesheet" href="style.css">
+    <script src="db.js"></script>
     <style>
+        /* ----- ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ СТРАНИЦЫ ПРОГРАММ ----- */
         .programs-header {
             background: var(--gradient-2);
             text-align: center;
@@ -76,17 +78,19 @@
             grid-column: 1 / -1;
         }
 
+        /* КАРТОЧКИ — ОДИНАКОВЫЙ РАЗМЕР И ВЫРАВНИВАНИЕ */
         .program-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: var(--border-radius);
-            padding: 25px;
-            text-align: center;
+            padding: 20px;
+            text-align: left;
             transition: all 0.4s ease;
-            height: 420px;
             display: flex;
             flex-direction: column;
+            height: 100%;
+            min-height: 460px;
             cursor: pointer;
         }
         .program-card:hover {
@@ -102,18 +106,37 @@
         }
         .program-card h3 {
             font-size: 1.3rem;
-            margin-bottom: 10px;
+            margin: 10px 0 8px 0;
             color: white;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .program-card p {
             font-size: 0.85rem;
             margin: 5px 0;
             color: rgba(255,255,255,0.8);
+            line-height: 1.4;
         }
+        /* Кнопка всегда внизу */
         .program-card .btn {
             margin-top: auto;
-            padding: 10px 20px;
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 40px;
+            padding: 10px;
+            color: white;
+            font-weight: 600;
             font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .program-card .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102,126,234,0.4);
         }
 
         /* МОДАЛЬНОЕ ОКНО */
@@ -178,6 +201,13 @@
         .modal .btn {
             margin-top: 30px;
             width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 40px;
+            padding: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
         }
         .requirement-badge {
             background: rgba(255,255,255,0.15);
@@ -201,6 +231,7 @@
             margin-bottom: 8px;
         }
 
+        /* АДАПТИВНОСТЬ */
         @media (max-width: 1200px) {
             .programs-grid { grid-template-columns: repeat(3, 1fr); }
         }
@@ -263,17 +294,19 @@
 </div>
 
 <script>
+    // Данные программ (город, описание города, требования и т.д.)
     const programs = [
-        { id: 1, name: "Erasmus+", country: "Германия", city: "Гейдельберг", cityDesc: "Старейший университетский город Германии на реке Неккар. Знаменит замком Гейдельберг и исторической архитектурой. Город, где наука и традиции встречаются.", university: "Universität Heidelberg", gpa: "3.5+", language: "B2", duration: "1 семестр", icon: "🇩🇪", image: "images/germany.jpg" },
-        { id: 2, name: "Academic Mobility", country: "Турция", city: "Анкара", cityDesc: "Столица Турции, современный город с богатой историей. Здесь находится мавзолей Ататюрка (Аныткабир), множество музеев и парков. Город контрастов: древность и современность.", university: "Middle East Technical University", gpa: "3.2+", language: "B1", duration: "1 семестр", icon: "🇹🇷", image: "images/turkey.jpg" },
-        { id: 3, name: "Летняя стажировка", country: "Южная Корея", city: "Сеул", cityDesc: "Столица Южной Кореи, мегаполис с небоскрёбами, буддийскими храмами и знаменитой уличной едой. Город, который не спит никогда, сочетание передовых технологий и древних традиций.", university: "Seoul National University", gpa: "3.0+", language: "B1", duration: "2 месяца", icon: "🇰🇷", image: "images/korea.jpg" },
-        { id: 4, name: "Обмен в Казахстане", country: "Казахстан", city: "Астана", cityDesc: "Современная столица Казахстана с уникальной архитектурой. Молодой и динамичный город, где находится Байтерек, Хан Шатыр и множество современных зданий.", university: "ЕНУ им. Гумилева", gpa: "3.0+", language: "B1", duration: "1 семестр", icon: "🇰🇿", image: "images/kaz.jpeg" },
-        { id: 5, name: "Стажировка в Китае", country: "Китай", city: "Пекин", cityDesc: "Столица Китая, город с тысячелетней историей. Здесь находятся Великая Китайская стена, Запретный город, храм Неба. Мегаполис, где древность встречается с будущим.", university: "Tsinghua University", gpa: "3.2+", language: "B2", duration: "1 год", icon: "🇨🇳", image: "images/kit.jpeg" },
-        { id: 6, name: "Study in Japan", country: "Япония", city: "Токио", cityDesc: "Столица Японии, футуристический город с древними храмами, лучшей кухней и передовыми технологиями. Город неоновых огней, сакур и традиционных чайных церемоний.", university: "University of Tokyo", gpa: "3.5+", language: "B2", duration: "1 семестр", icon: "🇯🇵", image: "images/japan.jpeg" },
-        { id: 7, name: "Обучение в Москве", country: "Россия", city: "Москва", cityDesc: "Столица России, крупнейший мегаполис, сердце культуры, бизнеса и образования. Красная площадь, Кремль, МГУ — символы величия и истории.", university: "МГУ им. Ломоносова", gpa: "3.0+", language: "B1", duration: "1 семестр", icon: "🇷🇺", image: "images/mos.jpeg" },
-        { id: 8, name: "Наука в Новосибирске", country: "Россия", city: "Новосибирск", cityDesc: "Научная столица Сибири, Академгородок, центр инноваций и исследований. Город молодых учёных, современной архитектуры и сибирского гостеприимства.", university: "НГУ", gpa: "3.0+", language: "B1", duration: "1 семестр", icon: "🇷🇺", image: "images/novo.jpeg" }
+        { id: 1, name: "Erasmus+", country: "Германия", city: "Гейдельберг", cityDesc: "Старейший университетский город Германии на реке Неккар. Знаменит замком Гейдельберг и исторической архитектурой.", university: "Universität Heidelberg", gpa: "3.5+", language: "B2", duration: "1 семестр", icon: "🇩🇪", image: "images/germany.jpg" },
+        { id: 2, name: "Academic Mobility", country: "Турция", city: "Анкара", cityDesc: "Столица Турции, современный город с богатой историей. Мавзолей Ататюрка, музеи, парки.", university: "Middle East Technical University", gpa: "3.2+", language: "B1", duration: "1 семестр", icon: "🇹🇷", image: "images/turkey.jpg" },
+        { id: 3, name: "Летняя стажировка", country: "Южная Корея", city: "Сеул", cityDesc: "Мегаполис с небоскрёбами, древними храмами и знаменитой уличной едой. Город, который не спит никогда.", university: "Seoul National University", gpa: "3.0+", language: "B1", duration: "2 месяца", icon: "🇰🇷", image: "images/korea.jpg" },
+        { id: 4, name: "Обмен в Казахстане", country: "Казахстан", city: "Астана", cityDesc: "Современная столица с уникальной архитектурой. Молодой и динамичный город.", university: "ЕНУ им. Гумилева", gpa: "3.0+", language: "B1", duration: "1 семестр", icon: "🇰🇿", image: "images/kaz.jpeg" },
+        { id: 5, name: "Стажировка в Китае", country: "Китай", city: "Пекин", cityDesc: "Столица Китая, город с тысячелетней историей. Великая Китайская стена, Запретный город.", university: "Tsinghua University", gpa: "3.2+", language: "B2", duration: "1 год", icon: "🇨🇳", image: "images/kit.jpeg" },
+        { id: 6, name: "Study in Japan", country: "Япония", city: "Токио", cityDesc: "Футуристический город с древними храмами, лучшей кухней и передовыми технологиями.", university: "University of Tokyo", gpa: "3.5+", language: "B2", duration: "1 семестр", icon: "🇯🇵", image: "images/japan.jpeg" },
+        { id: 7, name: "Обучение в Москве", country: "Россия", city: "Москва", cityDesc: "Столица России, крупнейший мегаполис, сердце культуры и образования. Красная площадь, Кремль.", university: "МГУ им. Ломоносова", gpa: "3.0+", language: "B1", duration: "1 семестр", icon: "🇷🇺", image: "images/mos.jpeg" },
+        { id: 8, name: "Наука в Новосибирске", country: "Россия", city: "Новосибирск", cityDesc: "Научная столица Сибири, Академгородок, центр инноваций и исследований.", university: "НГУ", gpa: "3.0+", language: "B1", duration: "1 семестр", icon: "🇷🇺", image: "images/novo.jpeg" }
     ];
 
+    // Подробные требования для каждой программы
     const programDetails = {
         1: { requirements: "Средний балл от 3.5, владение немецким или английским на уровне B2", documents: "Загранпаспорт, транскрипт, мотивационное письмо, 2 рекомендации", deadline: "До 15 марта 2026 года", scholarship: "Стипендия Erasmus+ покрывает проживание и перелёт (800€/мес)", accommodation: "Общежитие университета или частные апартаменты", credits: "30 ECTS кредитов за семестр" },
         2: { requirements: "GPA от 3.2, английский B1", documents: "Паспорт, справка об обучении, IELTS 5.5 (при наличии)", deadline: "До 1 апреля 2026", scholarship: "Стипендия Mevlana — 600$ в месяц", accommodation: "Студенческое общежитие гарантировано", credits: "25-30 ECTS" },
@@ -285,19 +318,16 @@
         8: { requirements: "GPA от 3.0, русский или английский B1", documents: "Заявка, научные публикации (приветствуются)", deadline: "До 15 мая 2026", scholarship: "Стипендия НГУ — 15 000 руб/мес", accommodation: "Комфортабельное общежитие", credits: "24 ECTS" }
     };
 
-    function getCurrentUser() {
-        const userStr = sessionStorage.getItem('currentUser');
-        return userStr ? JSON.parse(userStr) : null;
-    }
-
-    function applyToProgram(program) {
-        const user = getCurrentUser();
+    // Функции для работы с БД (через db.js)
+    async function applyToProgram(program) {
+        const user = db.getCurrentUser();
         if (!user) {
             if (confirm('❌ Для подачи заявки нужно войти. Перейти на страницу входа?')) {
                 window.location.href = 'login.html';
             }
             return;
         }
+        // Сохраняем выбранную программу и переходим на страницу заявки
         localStorage.setItem('selectedProgram', JSON.stringify(program));
         window.location.href = 'apply.html';
     }
@@ -305,46 +335,34 @@
     function openModal(programId) {
         const prog = programs.find(p => p.id === programId);
         const details = programDetails[programId];
-        
         const modalBody = document.getElementById('modalBody');
         modalBody.innerHTML = `
             <h2>${prog.icon} ${prog.name}</h2>
             <p><strong>📍 Страна:</strong> ${prog.country}</p>
             <p><strong>🏛️ Университет:</strong> ${prog.university}</p>
             <p><strong>⏱️ Длительность:</strong> ${prog.duration}</p>
-            
             <div class="city-info-modal">
                 <div class="city-name-modal">🏙️ О городе ${prog.city}</div>
                 <p>${prog.cityDesc}</p>
             </div>
-            
             <h3>📋 Требования</h3>
             <p>${details.requirements}</p>
             <div>
                 <span class="requirement-badge">GPA ${prog.gpa}</span>
                 <span class="requirement-badge">Язык: ${prog.language}</span>
             </div>
-            
             <h3>📄 Необходимые документы</h3>
-            <ul>
-                ${details.documents.split(', ').map(d => `<li>📌 ${d}</li>`).join('')}
-            </ul>
-            
+            <ul>${details.documents.split(', ').map(d => `<li>📌 ${d}</li>`).join('')}</ul>
             <h3>💰 Финансирование и стипендия</h3>
             <p>${details.scholarship}</p>
-            
             <h3>🏠 Проживание</h3>
             <p>${details.accommodation}</p>
-            
             <h3>📅 Дедлайн подачи</h3>
             <p>⏰ ${details.deadline}</p>
-            
             <h3>🎓 Академические кредиты</h3>
             <p>${details.credits}</p>
-            
             <button class="btn" onclick="applyFromModal(${programId})">📝 Подать заявку сейчас</button>
         `;
-        
         document.getElementById('programModal').classList.add('active');
     }
 
@@ -358,16 +376,15 @@
         applyToProgram(program);
     }
 
+    // Закрытие модального окна при клике на фон
     document.getElementById('programModal').addEventListener('click', (e) => {
-        if (e.target === document.getElementById('programModal')) {
-            closeModal();
-        }
+        if (e.target === document.getElementById('programModal')) closeModal();
     });
 
+    // Фильтрация и отрисовка карточек
     function renderPrograms() {
         const searchText = document.getElementById('searchInput').value.toLowerCase();
         const countryValue = document.getElementById('countryFilter').value;
-        
         const filtered = programs.filter(prog => {
             const matchSearch = prog.name.toLowerCase().includes(searchText) ||
                                prog.country.toLowerCase().includes(searchText) ||
@@ -375,19 +392,14 @@
             const matchCountry = !countryValue || prog.country === countryValue;
             return matchSearch && matchCountry;
         });
-        
         const container = document.getElementById('programsContainer');
         const stats = document.getElementById('stats');
-        
         stats.innerHTML = `📚 Найдено программ: ${filtered.length} из ${programs.length}`;
-        
         if (filtered.length === 0) {
             container.innerHTML = '<div class="no-results">😕 Ничего не найдено. Попробуй изменить поиск</div>';
             return;
         }
-        
         container.innerHTML = '';
-        
         filtered.forEach(prog => {
             const card = document.createElement('div');
             card.className = 'program-card';
@@ -400,23 +412,19 @@
                 <p>⏱️ ${prog.duration}</p>
                 <button class="btn">📖 Подробнее</button>
             `;
-            
             const btn = card.querySelector('.btn');
             btn.onclick = (e) => {
                 e.stopPropagation();
                 openModal(prog.id);
             };
-            
             card.onclick = () => openModal(prog.id);
-            
             container.appendChild(card);
         });
     }
-    
+
     document.getElementById('searchInput').addEventListener('input', renderPrograms);
     document.getElementById('countryFilter').addEventListener('change', renderPrograms);
     renderPrograms();
 </script>
-
 </body>
 </html>
