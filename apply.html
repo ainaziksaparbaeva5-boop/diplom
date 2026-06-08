@@ -7,11 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="db.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
             background: #0a0f1f;
@@ -94,7 +90,7 @@
             color: #667eea;
             margin-right: 8px;
         }
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 0.8rem 1rem;
             background: rgba(255,255,255,0.05);
@@ -102,10 +98,35 @@
             border-radius: 15px;
             color: white;
             font-size: 1rem;
+            font-family: 'Inter', sans-serif;
         }
-        .form-group input:focus, .form-group select:focus {
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
             border-color: #667eea;
+        }
+        .file-input {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .file-input button {
+            background: rgba(102,126,234,0.2);
+            border: 1px solid #667eea;
+            border-radius: 30px;
+            padding: 8px 15px;
+            color: white;
+            cursor: pointer;
+            width: fit-content;
+            transition: 0.3s;
+        }
+        .file-input button:hover {
+            background: #667eea;
+        }
+        .file-name {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+            word-break: break-all;
         }
         .programs-list {
             display: flex;
@@ -139,13 +160,6 @@
             margin-right: 10px;
             accent-color: #667eea;
         }
-        .program-option strong {
-            font-size: 1rem;
-        }
-        .program-option small {
-            color: rgba(255,255,255,0.5);
-            font-size: 0.8rem;
-        }
         .btn-submit {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
@@ -169,10 +183,6 @@
             padding: 2rem;
             margin-top: 2rem;
         }
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
         @media (max-width: 700px) {
             h2 { font-size: 1.5rem; }
         }
@@ -195,7 +205,7 @@
 <section class="form-container">
     <div class="form-card">
         <h2><i class="fas fa-paper-plane"></i> Подача заявки</h2>
-        <div class="subtitle">Заполните информацию для участия в программе</div>
+        <div class="subtitle">Заполните информацию и прикрепите необходимые документы</div>
 
         <form id="applicationForm">
             <div class="form-group">
@@ -220,6 +230,38 @@
                 </select>
             </div>
 
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> Мотивационное письмо (текст)</label>
+                <textarea id="motivationText" rows="5" placeholder="Расскажите о себе, почему вы хотите участвовать в программе..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-passport"></i> Скан паспорта</label>
+                <div class="file-input">
+                    <button type="button" onclick="document.getElementById('passportFile').click()">Выбрать файл</button>
+                    <input type="file" id="passportFile" accept=".pdf,.jpg,.png" style="display:none" onchange="updateFileName(this, 'passportName')">
+                    <span id="passportName" class="file-name">Файл не выбран</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-scroll"></i> Транскрипт (выписка оценок)</label>
+                <div class="file-input">
+                    <button type="button" onclick="document.getElementById('transcriptFile').click()">Выбрать файл</button>
+                    <input type="file" id="transcriptFile" accept=".pdf,.jpg,.png" style="display:none" onchange="updateFileName(this, 'transcriptName')">
+                    <span id="transcriptName" class="file-name">Файл не выбран</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-heart"></i> Мотивационное письмо (файл, если есть)</label>
+                <div class="file-input">
+                    <button type="button" onclick="document.getElementById('motivationFile').click()">Выбрать файл</button>
+                    <input type="file" id="motivationFile" accept=".pdf,.doc,.docx" style="display:none" onchange="updateFileName(this, 'motivationFileName')">
+                    <span id="motivationFileName" class="file-name">Файл не выбран</span>
+                </div>
+            </div>
+
             <button type="submit" class="btn-submit"><i class="fas fa-send"></i> Отправить заявку</button>
         </form>
     </div>
@@ -230,20 +272,26 @@
 </footer>
 
 <script>
-    // Ждём загрузки db.js
+    function updateFileName(input, spanId) {
+        const span = document.getElementById(spanId);
+        if (input.files && input.files[0]) {
+            span.textContent = input.files[0].name;
+        } else {
+            span.textContent = 'Файл не выбран';
+        }
+    }
+
+    // Загрузка списка программ
     document.addEventListener('DOMContentLoaded', async () => {
-        // Проверяем, что db загружена и есть функция getAllPrograms
         if (typeof db === 'undefined') {
             alert('Ошибка: db.js не загружен. Проверьте подключение файла.');
             return;
         }
 
-        // Получаем список программ (статические данные из db.js или свои)
         let programs = [];
         if (db.getAllPrograms) {
             programs = db.getAllPrograms();
         } else {
-            // Запасной вариант, если в db.js нет getAllPrograms
             programs = [
                 { id: 1, name: "Erasmus+", country: "Германия", icon: "🇩🇪" },
                 { id: 2, name: "Academic Mobility", country: "Турция", icon: "🇹🇷" },
@@ -271,7 +319,6 @@
             radio.addEventListener('change', () => {
                 if (radio.checked) {
                     document.getElementById('selectedProgramName').value = prog.name;
-                    // Убираем выделение у всех
                     document.querySelectorAll('.program-option').forEach(opt => opt.classList.remove('selected'));
                     div.classList.add('selected');
                 }
@@ -279,7 +326,7 @@
             container.appendChild(div);
         });
 
-        // Автозаполнение уровня языка, если есть сохранённый результат теста
+        // Автозаполнение уровня языка
         if (db.getLatestTestResult) {
             const testResult = await db.getLatestTestResult();
             if (testResult && testResult.level) {
@@ -289,7 +336,7 @@
         }
     });
 
-    // Обработка отправки формы
+    // Отправка заявки
     document.getElementById('applicationForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -304,6 +351,12 @@
         const programName = document.getElementById('selectedProgramName').value;
         const gpa = parseFloat(document.getElementById('gpa').value);
         const languageLevel = document.getElementById('languageLevel').value;
+        const motivationText = document.getElementById('motivationText').value;
+
+        // Собираем имена файлов (сами файлы не сохраняем, только имена)
+        const passportFile = document.getElementById('passportFile').files[0];
+        const transcriptFile = document.getElementById('transcriptFile').files[0];
+        const motivationFile = document.getElementById('motivationFile').files[0];
 
         if (!programName) {
             alert('Пожалуйста, выберите программу');
@@ -317,14 +370,28 @@
             alert('Выберите уровень языка');
             return;
         }
+        // Проверяем, что выбраны обязательные файлы (паспорт и транскрипт)
+        if (!passportFile || !transcriptFile) {
+            alert('Пожалуйста, прикрепите скан паспорта и транскрипт');
+            return;
+        }
+
+        // Подготавливаем данные для сохранения
+        const applicationData = {
+            program: programName,
+            gpa: gpa,
+            languageLevel: languageLevel,
+            motivationText: motivationText || '',
+            documents: {
+                passport: passportFile.name,
+                transcript: transcriptFile.name,
+                motivation: motivationFile ? motivationFile.name : ''
+            }
+        };
 
         try {
-            await db.saveApplication({
-                program: programName,
-                gpa: gpa,
-                languageLevel: languageLevel
-            });
-            alert('✅ Заявка успешно отправлена!');
+            await db.saveApplication(applicationData);
+            alert('✅ Заявка успешно отправлена! Документы прикреплены.');
             window.location.href = 'dashboard.html';
         } catch (err) {
             alert('❌ Ошибка при отправке: ' + err.message);
