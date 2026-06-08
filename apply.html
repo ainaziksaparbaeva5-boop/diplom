@@ -16,9 +16,13 @@
             font-family: 'Inter', sans-serif;
             background: #0a0f1f;
             color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         .header {
             background: rgba(10,15,31,0.8);
+            backdrop-filter: blur(20px);
             padding: 1rem 5%;
             display: flex;
             justify-content: space-between;
@@ -26,38 +30,50 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-      .logo {
-    font-size: 1.8rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .nav {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
         .nav a {
             color: rgba(255,255,255,0.7);
             text-decoration: none;
             padding: 0.5rem 1rem;
             border-radius: 30px;
+            transition: 0.3s;
         }
         .nav a:hover {
             background: #667eea;
             color: white;
         }
         .form-container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 0 20px;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
         }
         .form-card {
             background: rgba(255,255,255,0.05);
             border-radius: 30px;
             padding: 2rem;
+            max-width: 800px;
+            width: 100%;
         }
         h2 {
             font-size: 2rem;
             color: #667eea;
             margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         .subtitle {
             color: rgba(255,255,255,0.6);
@@ -66,13 +82,17 @@
             border-left: 3px solid #667eea;
         }
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         .form-group label {
             display: block;
             font-weight: 600;
             color: rgba(255,255,255,0.8);
             margin-bottom: 0.5rem;
+        }
+        .form-group label i {
+            color: #667eea;
+            margin-right: 8px;
         }
         .form-group input, .form-group select {
             width: 100%;
@@ -83,46 +103,78 @@
             color: white;
             font-size: 1rem;
         }
-        .program-cards {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
         }
-        .program-card {
-            flex: 1;
-            min-width: 150px;
+        .programs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        .program-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px;
-            padding: 1.5rem;
-            text-align: center;
             cursor: pointer;
+            transition: all 0.2s;
         }
-        .program-card.selected {
-            border-color: #667eea;
+        .program-option:hover {
             background: rgba(102,126,234,0.1);
+            border-color: #667eea;
         }
-        .program-card i {
-            font-size: 2rem;
-            color: #667eea;
+        .program-option.selected {
+            background: rgba(102,126,234,0.2);
+            border-color: #667eea;
+        }
+        .program-option input {
+            width: auto;
+            margin-right: 10px;
+            accent-color: #667eea;
+        }
+        .program-option strong {
+            font-size: 1rem;
+        }
+        .program-option small {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
         }
         .btn-submit {
-            width: 100%;
-            padding: 1rem;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            border-radius: 30px;
+            padding: 1rem;
             font-size: 1.2rem;
             font-weight: 600;
+            border-radius: 30px;
             cursor: pointer;
-            margin-top: 1.5rem;
+            width: 100%;
+            margin-top: 1rem;
+            transition: 0.3s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
         }
         .footer {
             background: rgba(0,0,0,0.5);
             text-align: center;
             padding: 2rem;
             margin-top: 2rem;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        @media (max-width: 700px) {
+            h2 { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -140,25 +192,26 @@
     </nav>
 </header>
 
-<div class="form-container">
+<section class="form-container">
     <div class="form-card">
-        <h2>📝 Подача заявки</h2>
+        <h2><i class="fas fa-paper-plane"></i> Подача заявки</h2>
         <div class="subtitle">Заполните информацию для участия в программе</div>
 
         <form id="applicationForm">
             <div class="form-group">
-                <label>Выберите программу</label>
-                <div class="program-cards" id="programCards"></div>
+                <label><i class="fas fa-university"></i> Выберите программу</label>
+                <div id="programsList" class="programs-list"></div>
+                <input type="hidden" id="selectedProgramName" required>
             </div>
 
             <div class="form-group">
-                <label>Средний балл (GPA)</label>
-                <input type="number" step="0.01" id="gpaInput" placeholder="3.5" required>
+                <label><i class="fas fa-calculator"></i> Средний балл (GPA)</label>
+                <input type="number" step="0.01" id="gpa" placeholder="3.5" required>
             </div>
 
             <div class="form-group">
-                <label>Уровень языка</label>
-                <select id="languageSelect" required>
+                <label><i class="fas fa-language"></i> Уровень языка</label>
+                <select id="languageLevel" required>
                     <option value="">Выберите уровень</option>
                     <option value="A2">A2 (базовый)</option>
                     <option value="B1">B1 (средний)</option>
@@ -167,74 +220,114 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn-submit">📤 Отправить заявку</button>
+            <button type="submit" class="btn-submit"><i class="fas fa-send"></i> Отправить заявку</button>
         </form>
     </div>
-</div>
+</section>
 
 <footer class="footer">
     <p>© 2026 КНУ Exchange | <a href="mailto:info@knu.kg">info@knu.kg</a></p>
 </footer>
 
 <script>
-    // Загрузка программ
-    const programs = [
-        { id: 1, name: "Erasmus+", country: "Германия", icon: "🇩🇪" },
-        { id: 2, name: "Academic Mobility", country: "Турция", icon: "🇹🇷" },
-        { id: 3, name: "Летняя стажировка", country: "Корея", icon: "🇰🇷" },
-        { id: 4, name: "Study in Japan", country: "Япония", icon: "🇯🇵" }
-    ];
-    
-    const container = document.getElementById('programCards');
-    
-    programs.forEach(prog => {
-        const card = document.createElement('div');
-        card.className = 'program-card';
-        card.innerHTML = `<div>${prog.icon}</div><span>${prog.name}</span><small>${prog.country}</small>`;
-        card.onclick = () => {
-            document.querySelectorAll('.program-card').forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            card.selectedProgram = prog.name;
-        };
-        container.appendChild(card);
-    });
-    
-    // Отправка
-    document.getElementById('applicationForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const selectedCard = document.querySelector('.program-card.selected');
-        if (!selectedCard) {
-            alert('Выберите программу');
+    // Ждём загрузки db.js
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Проверяем, что db загружена и есть функция getAllPrograms
+        if (typeof db === 'undefined') {
+            alert('Ошибка: db.js не загружен. Проверьте подключение файла.');
             return;
         }
-        
+
+        // Получаем список программ (статические данные из db.js или свои)
+        let programs = [];
+        if (db.getAllPrograms) {
+            programs = db.getAllPrograms();
+        } else {
+            // Запасной вариант, если в db.js нет getAllPrograms
+            programs = [
+                { id: 1, name: "Erasmus+", country: "Германия", icon: "🇩🇪" },
+                { id: 2, name: "Academic Mobility", country: "Турция", icon: "🇹🇷" },
+                { id: 3, name: "Летняя стажировка", country: "Корея", icon: "🇰🇷" },
+                { id: 4, name: "Обмен в Казахстане", country: "Казахстан", icon: "🇰🇿" },
+                { id: 5, name: "Стажировка в Китае", country: "Китай", icon: "🇨🇳" },
+                { id: 6, name: "Study in Japan", country: "Япония", icon: "🇯🇵" },
+                { id: 7, name: "Обучение в Москве", country: "Россия", icon: "🇷🇺" },
+                { id: 8, name: "Наука в Новосибирске", country: "Россия", icon: "🇷🇺" }
+            ];
+        }
+
+        const container = document.getElementById('programsList');
+        container.innerHTML = '';
+        programs.forEach(prog => {
+            const div = document.createElement('div');
+            div.className = 'program-option';
+            div.innerHTML = `
+                <input type="radio" name="program" value="${prog.name}" id="prog_${prog.id}">
+                <label for="prog_${prog.id}" style="flex:1; cursor:pointer;">
+                    <strong>${prog.icon} ${prog.name}</strong> <small>(${prog.country})</small>
+                </label>
+            `;
+            const radio = div.querySelector('input');
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    document.getElementById('selectedProgramName').value = prog.name;
+                    // Убираем выделение у всех
+                    document.querySelectorAll('.program-option').forEach(opt => opt.classList.remove('selected'));
+                    div.classList.add('selected');
+                }
+            });
+            container.appendChild(div);
+        });
+
+        // Автозаполнение уровня языка, если есть сохранённый результат теста
+        if (db.getLatestTestResult) {
+            const testResult = await db.getLatestTestResult();
+            if (testResult && testResult.level) {
+                const levelSelect = document.getElementById('languageLevel');
+                if (levelSelect) levelSelect.value = testResult.level;
+            }
+        }
+    });
+
+    // Обработка отправки формы
+    document.getElementById('applicationForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
         const user = db.getCurrentUser();
         if (!user) {
-            if (confirm('Нужно войти. Перейти на страницу входа?')) {
+            if (confirm('❌ Для подачи заявки нужно войти. Перейти на страницу входа?')) {
                 window.location.href = 'login.html';
             }
             return;
         }
-        
-        const gpa = document.getElementById('gpaInput').value;
-        const languageLevel = document.getElementById('languageSelect').value;
-        
-        if (!gpa || !languageLevel) {
-            alert('Заполните все поля');
+
+        const programName = document.getElementById('selectedProgramName').value;
+        const gpa = parseFloat(document.getElementById('gpa').value);
+        const languageLevel = document.getElementById('languageLevel').value;
+
+        if (!programName) {
+            alert('Пожалуйста, выберите программу');
             return;
         }
-        
+        if (isNaN(gpa) || gpa < 0 || gpa > 4) {
+            alert('Введите корректный GPA (0.0 – 4.0)');
+            return;
+        }
+        if (!languageLevel) {
+            alert('Выберите уровень языка');
+            return;
+        }
+
         try {
             await db.saveApplication({
-                program: selectedCard.selectedProgram || selectedCard.querySelector('span').innerText,
-                gpa: parseFloat(gpa),
+                program: programName,
+                gpa: gpa,
                 languageLevel: languageLevel
             });
-            alert('Заявка отправлена!');
+            alert('✅ Заявка успешно отправлена!');
             window.location.href = 'dashboard.html';
-        } catch (error) {
-            alert('Ошибка: ' + error.message);
+        } catch (err) {
+            alert('❌ Ошибка при отправке: ' + err.message);
         }
     });
 </script>
